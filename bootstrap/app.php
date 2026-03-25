@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             App\Http\Middleware\SetOrganizationContext::class,
         ]);
+
+        $middleware->alias([
+            'org' => App\Http\Middleware\RequiresOrganization::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

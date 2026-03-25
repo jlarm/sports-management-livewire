@@ -3,7 +3,48 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
+    @php
+        $organizationColor = context('organization')?->primary_color;
+        $accentForeground = '#ffffff';
+
+        if (is_string($organizationColor) && preg_match('/^#[A-Fa-f0-9]{6}$/', $organizationColor) === 1) {
+            [$red, $green, $blue] = sscanf($organizationColor, '#%02x%02x%02x');
+
+            $luminance = ((0.2126 * $red) + (0.7152 * $green) + (0.0722 * $blue)) / 255;
+            $accentForeground = $luminance > 0.6 ? '#111827' : '#ffffff';
+        }
+    @endphp
+    <body
+        x-data
+        x-on:organization-theme-updated.window="
+            const color = $event.detail.color;
+            if (! color) {
+                $el.style.removeProperty('--color-accent');
+                $el.style.removeProperty('--color-accent-content');
+                $el.style.removeProperty('--color-accent-foreground');
+                return;
+            }
+
+            $el.style.setProperty('--color-accent', color);
+            $el.style.setProperty('--color-accent-content', color);
+
+            const hex = color.replace('#', '');
+            const red = Number.parseInt(hex.slice(0, 2), 16);
+            const green = Number.parseInt(hex.slice(2, 4), 16);
+            const blue = Number.parseInt(hex.slice(4, 6), 16);
+            const luminance = ((0.2126 * red) + (0.7152 * green) + (0.0722 * blue)) / 255;
+
+            $el.style.setProperty('--color-accent-foreground', luminance > 0.6 ? '#111827' : '#ffffff');
+        "
+        @if (is_string($organizationColor) && preg_match('/^#[A-Fa-f0-9]{6}$/', $organizationColor) === 1)
+            style="
+                --color-accent: {{ $organizationColor }};
+                --color-accent-content: {{ $organizationColor }};
+                --color-accent-foreground: {{ $accentForeground }};
+            "
+        @endif
+        class="min-h-screen bg-white dark:bg-zinc-800"
+    >
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
@@ -17,26 +58,22 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
-
-                    {{-- Organization nav items: only active once an organization exists --}}
-                    {{-- Example (add your items here):
-                    <flux:sidebar.item icon="users" :href="route('teams.index')" :disabled="! $hasOrganization" wire:navigate>
-                        {{ __('Teams') }}
-                    </flux:sidebar.item>
-                    --}}
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <flux:spacer />
 
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
+            <flux:sidebar.nav heading="Resources">
+                <flux:sidebar.group :heading="__('Organization')" class="grid">
+                    <flux:sidebar.item
+                        icon="cog-8-tooth"
+                        :href="$hasOrganization ? route('organization.settings') : null"
+                        :wire:navigate="$hasOrganization"
+                        :class="! $hasOrganization ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''"
+                    >
+                        {{ __('Settings') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
@@ -100,5 +137,8 @@
         {{ $slot }}
 
         @fluxScripts
+        @persist('toast')
+        <flux:toast />
+        @endpersist
     </body>
 </html>
