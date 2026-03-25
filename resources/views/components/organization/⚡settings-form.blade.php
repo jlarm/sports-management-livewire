@@ -46,6 +46,7 @@ new class extends Component {
             return;
         }
 
+        $this->authorize('update', $this->organization);
         $this->validate();
 
         $logoPath = $this->existingImagePath;
