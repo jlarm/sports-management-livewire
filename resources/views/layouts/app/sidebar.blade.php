@@ -4,12 +4,15 @@
         @include('partials.head')
     </head>
     @php
-        $organizationColor = context('organization')?->primary_color;
+        $organization = context('organization');
+        $hasOrganization = $organization !== null;
+        $organizationColor = null;
         $accentForeground = '#ffffff';
 
-        if (is_string($organizationColor) && preg_match('/^#[A-Fa-f0-9]{6}$/', $organizationColor) === 1) {
+        $rawColor = $organization?->primary_color;
+        if (is_string($rawColor) && preg_match('/^#[A-Fa-f0-9]{6}$/', $rawColor) === 1) {
+            $organizationColor = $rawColor;
             [$red, $green, $blue] = sscanf($organizationColor, '#%02x%02x%02x');
-
             $luminance = ((0.2126 * $red) + (0.7152 * $green) + (0.0722 * $blue)) / 255;
             $accentForeground = $luminance > 0.6 ? '#111827' : '#ffffff';
         }
@@ -36,12 +39,8 @@
 
             $el.style.setProperty('--color-accent-foreground', luminance > 0.6 ? '#111827' : '#ffffff');
         "
-        @if (is_string($organizationColor) && preg_match('/^#[A-Fa-f0-9]{6}$/', $organizationColor) === 1)
-            style="
-                --color-accent: {{ $organizationColor }};
-                --color-accent-content: {{ $organizationColor }};
-                --color-accent-foreground: {{ $accentForeground }};
-            "
+        @if ($organizationColor)
+            style="--color-accent: {{ $organizationColor }}; --color-accent-content: {{ $organizationColor }}; --color-accent-foreground: {{ $accentForeground }};"
         @endif
         class="min-h-screen bg-white dark:bg-zinc-800"
     >
@@ -50,8 +49,6 @@
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
-
-            @php($hasOrganization = context('organization') !== null)
 
             <flux:sidebar.nav>
                 <flux:sidebar.group class="grid">

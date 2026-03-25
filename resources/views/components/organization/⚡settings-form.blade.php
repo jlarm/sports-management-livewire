@@ -124,7 +124,7 @@ new class extends Component {
     </flux:field>
 
     <flux:field>
-        <flux:input type="color" wire:model="color" label="Custom Color" />
+        <flux:input type="color" wire:model="color" label="Color" />
         <flux:error name="color" />
     </flux:field>
 
