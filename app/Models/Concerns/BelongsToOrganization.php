@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Context;
 
 trait BelongsToOrganization
 {
@@ -14,7 +15,9 @@ trait BelongsToOrganization
     protected static function bootBelongsToOrganization(): void
     {
         static::addGlobalScope('organization', function (Builder $query): void {
-            if (app()->bound('organization') && $organization = app('organization')) {
+            $organization = Context::get('organization');
+
+            if ($organization) {
                 $query->where('organization_id', $organization->id);
             }
         });

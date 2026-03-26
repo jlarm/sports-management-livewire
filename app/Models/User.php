@@ -98,7 +98,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     public function organization(): ?Organization
     {
-        return $this->organizations()->first();
+        return once(fn () => $this->organizations()->first());
     }
 
     /**

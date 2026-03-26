@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('division_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->unsignedBigInteger('head_coach_id')->nullable();
+            $table->unsignedBigInteger('head_coach_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

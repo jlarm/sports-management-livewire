@@ -3,6 +3,7 @@
 use App\Models\Season;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Flux\Flux;
 
 new class extends Component
 {
@@ -24,7 +25,13 @@ new class extends Component
             'name' => $this->name,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
+            'active' => 1,
         ]);
+
+        Flux::toast(
+            text: 'Season created successfully',
+            variant: 'success',
+        );
 
         $this->redirect(route('dashboard'), navigate: true);
     }
@@ -39,7 +46,7 @@ new class extends Component
         <form wire:submit="create" class="space-y-4 pt-4">
             <flux:field>
                 <flux:label>Season name</flux:label>
-                <flux:input wire:model="name" placeholder="e.g. Spring 2026" autofocus />
+                <flux:input wire:model="name" placeholder="e.g. Spring {{ now()->format('Y') }}" autofocus />
                 <flux:error name="name" />
             </flux:field>
 

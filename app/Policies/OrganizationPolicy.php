@@ -14,6 +14,6 @@ final class OrganizationPolicy
 
     public function update(User $user, Organization $organization): bool
     {
-        return $organization->users()->wherePivot('user_id', $user->id)->exists();
+        return $organization->users()->where('user_id', $user->id)->exists();
     }
 }

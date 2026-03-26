@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\Organization;
 use App\Models\Season;
 use App\Models\Team;
+use Illuminate\Support\Facades\Context;
 
 test('to array', function (): void {
     $season = Season::factory()->create()->refresh();
@@ -30,6 +31,22 @@ test('belongs to organization', function (): void {
     $season = Season::factory()->for($organization)->create();
 
     expect($season->organization->is($organization))->toBeTrue();
+});
+
+test('organization scope isolates data per tenant', function (): void {
+    $orgA = Organization::factory()->create();
+    $orgB = Organization::factory()->create();
+
+    Season::factory()->for($orgA)->create(['name' => 'Org A Season']);
+    Season::factory()->for($orgB)->create(['name' => 'Org B Season']);
+
+    Context::add('organization', $orgA);
+
+    expect(Season::all())
+        ->toHaveCount(1)
+        ->first()->name->toBe('Org A Season');
+
+    Context::flush();
 });
 
 test('season has many teams', function (): void {

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToOrganization;
+use App\Observers\SeasonObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\SeasonFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property-read int $id
- * @property-read string $uuid
+ * @property string $uuid
  * @property-read int $organization_id
  * @property-read string $name
  * @property-read string $start_date
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read CarbonInterface $updated_at
  * @property-read CarbonInterface|null $deleted_at
  */
+#[ObservedBy(SeasonObserver::class)]
 final class Season extends Model
 {
     /** @use HasFactory<SeasonFactory> */
