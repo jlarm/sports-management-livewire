@@ -36,3 +36,25 @@ test('has many teams', function (): void {
         ->toHaveCount(3)
         ->each(fn ($team) => $team->division_id->toBe($division->id));
 });
+
+test('normalizes age-based division names to a consistent format', function (): void {
+    $division = Division::factory()->create([
+        'name' => ' 14 u ',
+    ])->refresh();
+
+    expect($division->name)->toBe('14U');
+
+    $division->update([
+        'name' => '15',
+    ]);
+
+    expect($division->fresh()->name)->toBe('15U');
+});
+
+test('preserves non-age division names while trimming extra whitespace', function (): void {
+    $division = Division::factory()->create([
+        'name' => '  Varsity   Gold  ',
+    ])->refresh();
+
+    expect($division->name)->toBe('Varsity Gold');
+});

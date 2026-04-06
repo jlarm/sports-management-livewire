@@ -55,7 +55,7 @@
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="shirt" :href="route('team.index')" :current="request()->routeIs('team.index')" wire:navigate>
+                    <flux:sidebar.item icon="shirt" :href="route('team.index')" :current="request()->routeIs('team.*')" wire:navigate>
                         {{ __('Teams') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
