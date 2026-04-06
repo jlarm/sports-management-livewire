@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use Livewire\Blaze\Blaze;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -27,10 +26,6 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->isLocal()) {
-            Blaze::debug();
-        }
-
         Model::unguard();
 
         Date::use(CarbonImmutable::class);

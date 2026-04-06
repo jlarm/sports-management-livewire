@@ -1,6 +1,6 @@
 <x-layouts::app :title="__('Seasons')">
     <div class="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        @if (\App\Models\Season::exists())
+        @if ($hasSeasons)
             <flux:card>
                 <livewire:season.switcher />
             </flux:card>
