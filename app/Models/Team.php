@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Models\Concerns\BelongsToOrganization;
 use Carbon\CarbonInterface;
 use Database\Factories\TeamFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -77,5 +78,14 @@ final class Team extends Model
     public function headCoach(): BelongsTo
     {
         return $this->belongsTo(User::class, 'head_coach_id');
+    }
+
+    protected static function booted(): void
+    {
+        self::addGlobalScope('current_season', static function (Builder $builder) {
+            if (session()->has('current_season_id')) {
+                $builder->where('season_id', session('current_season_id'));
+            }
+        });
     }
 }
