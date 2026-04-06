@@ -7,6 +7,7 @@ use App\Models\Organization;
 use App\Models\Season;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Support\Facades\Context;
 
 test('in array', function (): void {
     $team = Team::factory()->create()->refresh();
@@ -52,4 +53,28 @@ test('belongs to head coach', function (): void {
     $team = Team::factory()->for($user, 'headCoach')->create();
 
     expect($team->headCoach->is($user))->toBeTrue();
+});
+
+test('global scope filters teams to the current season in session', function (): void {
+    $organization = Organization::factory()->create();
+    $currentSeason = Season::factory()->for($organization)->create();
+    $otherSeason = Season::factory()->for($organization)->create();
+    $division = Division::factory()->for($organization)->create();
+
+    $currentSeasonTeam = Team::factory()
+        ->for($organization)
+        ->for($currentSeason)
+        ->for($division)
+        ->create();
+
+    Team::factory()
+        ->for($organization)
+        ->for($otherSeason)
+        ->for($division)
+        ->create();
+
+    Context::add('organization', $organization);
+    session()->put('current_season_id', $currentSeason->id);
+
+    expect(Team::query()->pluck('id')->all())->toBe([$currentSeasonTeam->id]);
 });

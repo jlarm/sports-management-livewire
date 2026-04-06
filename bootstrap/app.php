@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             App\Http\Middleware\SetOrganizationContext::class,
+            App\Http\Middleware\InitializeCurrentSeason::class,
         ]);
 
         $middleware->alias([

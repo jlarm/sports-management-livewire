@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Season;
+use Flux\Flux;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Flux\Flux;
 
 new class extends Component
 {
@@ -43,7 +45,7 @@ new class extends Component
         <flux:heading size="xl">Create your first season</flux:heading>
         <flux:text class="mb-6">Set up a season to start managing registrations and teams.</flux:text>
 
-        <form wire:submit="create" class="space-y-4 pt-4">
+        <form wire:submit.prevent="create" class="space-y-4 pt-4">
             <flux:field>
                 <flux:label>Season name</flux:label>
                 <flux:input wire:model="name" placeholder="e.g. Spring {{ now()->format('Y') }}" autofocus />

@@ -82,9 +82,11 @@ final class Team extends Model
 
     protected static function booted(): void
     {
-        self::addGlobalScope('current_season', static function (Builder $builder) {
-            if (session()->has('current_season_id')) {
-                $builder->where('season_id', session('current_season_id'));
+        self::addGlobalScope('current_season', static function (Builder $builder): void {
+            $currentSeasonId = session('current_season_id');
+
+            if (is_numeric($currentSeasonId)) {
+                $builder->where('season_id', (int) $currentSeasonId);
             }
         });
     }
